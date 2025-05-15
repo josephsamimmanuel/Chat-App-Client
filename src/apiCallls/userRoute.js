@@ -1,7 +1,6 @@
 import axiosInstance from "./index";
 
 export const registerUser = async (userData) => {
-    console.log(userData);
     const response = await axiosInstance.post("/auth/register", userData);
     return response.data;
 };

@@ -2,13 +2,18 @@ import React, { useState } from 'react'
 import { registerUser, loginUser } from '../../apiCallls/userRoute';
 import { uploadImage } from '../../apiCallls/uploadRoute';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../redux/userSlice';
 
 function Login() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const [button, setButton] = useState(false);
     const [userData, setUserData] = useState({
         username: "",
-        email: "",
-        password: "",
+        email: "josesamimmanuel@gmail.com",
+        password: "jose@123",
         profilePicture: "",
     });
     const [fileSelected, setFileSelected] = useState(null);
@@ -53,7 +58,8 @@ function Login() {
                 toast.loading("Logging in...");
                 const response = await loginUser(userData);
                 if (response) {
-                    localStorage.setItem("token", response.token);
+                    sessionStorage.setItem("token", response.token);
+                    dispatch(setUser(response));
                     toast.dismiss();
                     toast.success(response.message);
                     setUserData({
@@ -62,6 +68,7 @@ function Login() {
                         password: "",
                         profilePicture: "",
                     });
+                    navigate('/')
                 }
                 else {
                     toast.dismiss();
@@ -104,24 +111,26 @@ function Login() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-                <h1 className="mb-6 text-center text-4xl font-bold text-indigo-600">{button ? "Register" : "Login"}</h1>
+        <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white p-4 shadow-md sm:p-6 md:p-8 lg:max-w-lg">
+                <h1 className="mb-4 text-center text-2xl font-bold text-indigo-600 sm:mb-6 sm:text-3xl md:text-4xl">
+                    {button ? "Register" : "Login"}
+                </h1>
                 {/* Upload Image */}
                 {button && (
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700">Upload Image</label>
-                        <div className="flex items-center space-x-4">
+                    <div className="mb-4 sm:mb-6">
+                        <label className="block text-sm font-medium text-gray-700 md:text-base">Upload Image</label>
+                        <div className="mt-2 flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                             <div className="flex-1">
                                 <input 
                                     type="file" 
                                     name="profilePicture" 
                                     onChange={handleChange} 
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500" 
+                                    className="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:px-3 sm:py-2 md:text-base" 
                                 />
                                 <button 
                                     onClick={handleUploadImage} 
-                                    className="mt-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                                    className="mt-2 w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:py-2 md:text-base"
                                 >
                                     Upload Image
                                 </button>
@@ -131,24 +140,24 @@ function Login() {
                                     <img 
                                         src={userData.profilePicture} 
                                         alt="Profile" 
-                                        className="h-20 w-20 rounded-full object-cover border-2 border-indigo-500" 
+                                        className="h-16 w-16 rounded-full border-2 border-indigo-500 object-cover sm:h-20 sm:w-20" 
                                     />
                                 </div>
                             )}
                         </div>
                         {userData.profilePicture && (
-                            <p className="mt-2 text-sm text-green-600">✓ Image uploaded successfully</p>
+                            <p className="mt-2 text-sm text-green-600 md:text-base">✓ Image uploaded successfully</p>
                         )}
                     </div>
                 )}
                 {/* Login Form */}
                 {button ? (
-                    <form className="space-y-4">
+                    <form className="space-y-3 sm:space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">User Name</label>
+                            <label className="block text-sm font-medium text-gray-700 md:text-base">User Name</label>
                             <input
                                 type="text"
-                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:px-3 sm:py-2 md:text-base"
                                 placeholder="Your name"
                                 name="username"
                                 value={userData.username}
@@ -156,10 +165,10 @@ function Login() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <label className="block text-sm font-medium text-gray-700 md:text-base">Email</label>
                             <input
                                 type="email"
-                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:px-3 sm:py-2 md:text-base"
                                 placeholder="Your email"
                                 name="email"
                                 value={userData.email}
@@ -167,10 +176,10 @@ function Login() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Password</label>
+                            <label className="block text-sm font-medium text-gray-700 md:text-base">Password</label>
                             <input
                                 type="password"
-                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:px-3 sm:py-2 md:text-base"
                                 placeholder="Your password"
                                 name="password"
                                 value={userData.password}
@@ -179,12 +188,12 @@ function Login() {
                         </div>
                     </form>
                 ) : (
-                    <form className="space-y-4">
+                    <form className="space-y-3 sm:space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <label className="block text-sm font-medium text-gray-700 md:text-base">Email</label>
                             <input
                                 type="email"
-                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:px-3 sm:py-2 md:text-base"
                                 placeholder="Your email"
                                 name="email"
                                 value={userData.email}
@@ -192,10 +201,10 @@ function Login() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Password</label>
+                            <label className="block text-sm font-medium text-gray-700 md:text-base">Password</label>
                             <input
                                 type="password"
-                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:px-3 sm:py-2 md:text-base"
                                 placeholder="Your password"
                                 name="password"
                                 value={userData.password}
@@ -206,13 +215,21 @@ function Login() {
                 )}
                 <button
                     type="submit"
-                    className="w-full rounded-md bg-indigo-600 py-2 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-4"
+                    className="mt-4 w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-6 sm:py-2 md:text-base"
                     onClick={handleSubmit}
                 >
                     {button ? "Register" : "Login"}
                 </button>
-                <div className="mt-4 text-center">
-                    <p className="text-gray-500">{button ? "Already have an account?" : "Don't have an account?"} <button onClick={() => setButton(!button)}>{button ? "Login" : "Register"}</button></p>
+                <div className="mt-4 text-center sm:mt-6">
+                    <p className="text-sm text-gray-500 md:text-base">
+                        {button ? "Already have an account?" : "Don't have an account?"}{" "}
+                        <button 
+                            onClick={() => setButton(!button)}
+                            className="text-indigo-600 hover:text-indigo-500"
+                        >
+                            {button ? "Login" : "Register"}
+                        </button>
+                    </p>
                 </div>
             </div>
         </div>
