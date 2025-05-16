@@ -68,7 +68,8 @@ function Login() {
                         password: "",
                         profilePicture: "",
                     });
-                    navigate('/')
+                    console.log(response.data._id);
+                    navigate(`/onboarding/${response.data._id}`);
                 }
                 else {
                     toast.dismiss();

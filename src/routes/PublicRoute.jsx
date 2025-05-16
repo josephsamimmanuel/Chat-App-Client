@@ -34,10 +34,10 @@ function PublicRoute() {
     checkUser()
   }, [token, user, dispatch, navigate])
 
-  if (token && user) {
-    navigate('/')
-    return null
-  }
+  // if (token && user) {
+  //   navigate('/')
+  //   return null
+  // }
 
   return <Outlet />
 }
