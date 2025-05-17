@@ -29,7 +29,7 @@ function CommonRoutes() {
                         <Route path="/" element={<Home />} />
                         <Route path="/notifications" element={<NotificationsPage />} />
                         <Route path="/call" element={<CallPage />} />
-                        <Route path="/chat" element={<ChatPage />} />
+                        <Route path="/chat/:id" element={<ChatPage />} />
                         <Route path="/onboarding/:id" element={<Onboarding />} />
                         <Route path="/recieved-friend-request" element={<RecievedFriendRequest />} />
                         <Route path="/send-friend-request" element={<SendFriendRequest />} />

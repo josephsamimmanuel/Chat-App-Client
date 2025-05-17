@@ -44,7 +44,12 @@ function NewLearner() {
     
     return (
         <div className='w-full'>
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+            {users.length === 0 ? (
+                <div className='flex flex-col gap-2 p-4 w-full h-full justify-center items-center'>
+                    <p className='text-sm sm:text-base font-medium'>No new learners found</p>
+                </div>
+            ) : (
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
                 {users.map((user) => (
                 <div className='flex flex-col gap-2 border border-gray-300 rounded-md p-4 w-full shadow-sm hover:shadow-md transition-shadow duration-200'>
                     <div className='flex items-center gap-2'>
@@ -72,7 +77,8 @@ function NewLearner() {
                     </button>
                 </div>
                 ))}
-            </div>
+                </div>
+            )}
         </div>
     )
 }

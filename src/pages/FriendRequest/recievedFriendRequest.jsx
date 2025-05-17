@@ -44,7 +44,12 @@ function RecievedFriendRequest() {
   return (
     <div className='container mx-auto px-4 py-6'>
       <h2 className='text-2xl font-bold mb-6'>Recieved Friend Requests</h2>
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+      {allRequests.length === 0 ? (
+        <div className='flex flex-col gap-2 p-4 w-full h-full justify-center items-center'>
+          <p className='text-sm sm:text-base font-medium'>No recieved friend requests</p>
+        </div>
+      ) : (
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
         {allRequests.map((request) => (
         <div className='flex flex-col gap-2 border border-gray-300 rounded-md p-4 w-full shadow-sm hover:shadow-md transition-shadow duration-200'>
           <div className='flex items-center gap-3'>
@@ -76,7 +81,8 @@ function RecievedFriendRequest() {
           </div>
         </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
