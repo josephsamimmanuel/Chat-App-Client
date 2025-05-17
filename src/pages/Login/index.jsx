@@ -5,6 +5,8 @@ import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/userSlice';
+import { validateField } from '../../utils/constants';
+import Loading from '../../components/loading';
 
 function Login() {
     const navigate = useNavigate()
@@ -16,7 +18,14 @@ function Login() {
         password: "jose@123",
         profilePicture: "",
     });
+    const [errors, setErrors] = useState({
+        username: "",
+        email: "",
+        password: "",
+        profilePicture: "",
+    });
     const [fileSelected, setFileSelected] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     
     const handleChange = (e) => {
         if (e.target.name === "profilePicture") {
@@ -26,10 +35,48 @@ function Login() {
                 ...userData,
                 [e.target.name]: e.target.value
             });
+            setErrors({
+                ...errors,
+                [e.target.name]: validateField(e.target.name, e.target.value)
+            });
         }
     };
 
+    // Validation functions
+    const validateLoginFields = (email, password) => {
+        const errors = {};
+        const emailError = validateField('email', email);
+        const passwordError = validateField('password', password);
+        
+        if (emailError) errors.email = emailError;
+        if (passwordError) errors.password = passwordError;
+        
+        return errors;
+    };
+
+    const validateRegistrationFields = (userData) => {
+        const errors = {};
+        Object.keys(userData).forEach((key) => {
+            if (key !== 'profilePicture') {
+                const error = validateField(key, userData[key]);
+                if (error) errors[key] = error;
+            }
+        });
+        return errors;
+    };
+
     const handleSubmit = async () => {
+        // Validate fields based on mode (login/register)
+        const newErrors = button 
+            ? validateRegistrationFields(userData)
+            : validateLoginFields(userData.email, userData.password);
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        setIsLoading(true);
         if (button) {
             try {
                 toast.loading("Registering...");
@@ -52,6 +99,8 @@ function Login() {
             } catch (error) {
                 toast.dismiss();
                 toast.error(error.response.data.message);
+            } finally {
+                setIsLoading(false);
             }
         } else {
             try {
@@ -78,6 +127,8 @@ function Login() {
             } catch (error) {
                 toast.dismiss();
                 toast.error(error.response.data.message);
+            } finally {
+                setIsLoading(false);
             }
         }
     };
@@ -164,6 +215,7 @@ function Login() {
                                 value={userData.username}
                                 onChange={handleChange}
                             />
+                            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 md:text-base">Email</label>
@@ -175,6 +227,7 @@ function Login() {
                                 value={userData.email}
                                 onChange={handleChange}
                             />
+                            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 md:text-base">Password</label>
@@ -186,6 +239,7 @@ function Login() {
                                 value={userData.password}
                                 onChange={handleChange}
                             />
+                            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>
                     </form>
                 ) : (
@@ -200,6 +254,7 @@ function Login() {
                                 value={userData.email}
                                 onChange={handleChange}
                             />
+                            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 md:text-base">Password</label>
@@ -211,15 +266,24 @@ function Login() {
                                 value={userData.password}
                                 onChange={handleChange}
                             />
+                            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>
                     </form>
                 )}
                 <button
                     type="submit"
-                    className="mt-4 w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-6 sm:py-2 md:text-base"
+                    disabled={isLoading}
+                    className="mt-4 w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-6 sm:py-2 md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleSubmit}
                 >
-                    {button ? "Register" : "Login"}
+                    {isLoading ? (
+                        <div className="flex items-center justify-center">
+                            <Loading />
+                            {button ? "Registering..." : "Logging in..."}
+                        </div>
+                    ) : (
+                        button ? "Register" : "Login"
+                    )}
                 </button>
                 <div className="mt-4 text-center sm:mt-6">
                     <p className="text-sm text-gray-500 md:text-base">

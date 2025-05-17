@@ -1,16 +1,23 @@
 import React from 'react'
+import Friends from './friends';
+import NewLearner from './newLearner';
 
 function Home() {
   return (
-    <div data-theme="retro"> 
-      <button className="btn btn-neutral">Neutral</button>
-      <button className="btn btn-primary">Primary</button>
-      <button className="btn btn-secondary">Secondary</button>
-      <button className="btn btn-accent">Accent</button>
-      <button className="btn btn-info">Info</button>
-      <button className="btn btn-success">Success</button>
-      <button className="btn btn-warning">Warning</button>
-      <button className="btn btn-error">Error</button>
+    <div className="container mx-auto px-4 py-6"> 
+      {/* Friends Section */}
+      <div className='mb-8'>
+        <h2 className='text-2xl font-bold mb-4'>Your Friends</h2>
+        <div >
+          <Friends />
+        </div>
+      </div>
+
+      {/* New Learners Section */}
+      <div>
+        <h2 className='text-2xl font-bold mb-4'>Meet New People</h2>
+          <NewLearner />
+      </div>
     </div>
   )
 }

@@ -5,6 +5,8 @@ import { toast } from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsLoading } from '../../redux/loader'
 import { uploadImage } from '../../apiCallls/uploadRoute'
+import { validateField } from '../../utils/constants'
+import Loading from '../../components/loading'
 
 function Onboarding() {
   const navigate = useNavigate();
@@ -23,10 +25,19 @@ function Onboarding() {
     learningLanguage: user.data.learningLanguage || '',
   });
 
+  const [errors, setErrors] = useState({
+    username: '',
+    bio: '',
+    location: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       dispatch(setIsLoading(true));
+      setLoading(true);
       toast.loading('Onboarding...');
       const response = await onboardingRoute(formData);
       if (response) {
@@ -44,6 +55,8 @@ function Onboarding() {
       toast.dismiss();
       toast.error('Something went wrong');
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -77,7 +90,8 @@ function Onboarding() {
 
   const handleFileGenerate = () => {
     const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const imageUrl = `https://avatar.iran.liara.run/public/${randomNumber}`;
+    const imageUrl = `https://avatar.iran.liara.run/public/${randomNumber}.png`;
+    toast.success("Image generated successfully");
     console.log(imageUrl);
     setFormData({
       ...formData,
@@ -85,8 +99,24 @@ function Onboarding() {
     });
   }
 
-  console.log(formData);
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'profilePicture') {
+      const file = e.target.files?.[0];
+      if (file) {
+        setFormData({ ...formData, profilePicture: file });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value 
+      });
+      setErrors({
+        ...errors,
+        [name]: validateField(name, value)
+      });
+    }
+  }
   return (
     <div className='min-h-screen bg-gray-100'>
       <div className='container mx-auto px-4 py-8 md:py-12'>
@@ -110,12 +140,8 @@ function Onboarding() {
                 <input
                   type="file"
                   className='w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100'
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setFormData({ ...formData, profilePicture: file });
-                    }
-                  }}
+                  name="profilePicture"
+                  onChange={handleChange}
                 />
 
                 <div className='flex flex-col sm:flex-row gap-3 mt-4'>
@@ -148,11 +174,13 @@ function Onboarding() {
                   className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200'
                   type="text"
                   id="username"
+                  name="username"
                   required
                   value={formData.username}
                   placeholder='Enter your username'
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  onChange={handleChange}
                 />
+                {errors.username && <p className='text-red-500 text-sm'>{errors.username}</p>}
               </div>
 
               {/* Bio */}
@@ -163,11 +191,13 @@ function Onboarding() {
                 <textarea
                   className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 min-h-[120px]'
                   id="bio"
+                  name="bio"
                   required
                   value={formData.bio}
                   placeholder='Tell us about yourself'
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  onChange={handleChange}
                 />
+                {errors.bio && <p className='text-red-500 text-sm'>{errors.bio}</p>}
               </div>
 
               {/* Language Selection */}
@@ -181,8 +211,9 @@ function Onboarding() {
                     className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200'
                     id="nativeLanguage"
                     required
+                    name='nativeLanguage'
                     value={formData.nativeLanguage}
-                    onChange={(e) => setFormData({ ...formData, nativeLanguage: e.target.value })}
+                    onChange={handleChange}
                   >
                     <option value="">Select Native Language</option>
                     {nativeLanguages.map((language, index) => (
@@ -200,8 +231,9 @@ function Onboarding() {
                     className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200'
                     id="learningLanguage"
                     required
+                    name='learningLanguage'
                     value={formData.learningLanguage}
-                    onChange={(e) => setFormData({ ...formData, learningLanguage: e.target.value })}
+                    onChange={handleChange}
                   >
                     <option value="">Select Learning Language</option>
                     {learningLanguages.map((language, index) => (
@@ -220,11 +252,13 @@ function Onboarding() {
                   className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200'
                   type="text"
                   id="location"
+                  name="location"
                   required
                   value={formData.location}
                   placeholder='Enter your location'
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={handleChange}
                 />
+                {errors.location && <p className='text-red-500 text-sm'>{errors.location}</p>}
               </div>
             </div>
 
@@ -236,11 +270,20 @@ function Onboarding() {
               >
                 Cancel
               </button>
+              
               <button
                 type="submit"
                 className="w-full sm:w-auto min-w-[200px] bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg text-base font-medium transition-colors duration-200"
+                disabled={loading}
               >
-                {user ? 'Edit Profile' : 'Complete Profile'}
+                { loading ? (
+                  <div className='flex items-center justify-center'>
+                    <Loading />
+                    {user ? 'Editing Profile' : 'Completing Profile'}
+                  </div>
+                ) : (
+                  user ? 'Edit Profile' : 'Complete Profile'
+                )}
               </button>
             </div>
 
