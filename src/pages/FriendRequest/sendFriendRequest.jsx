@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CiLocationOn } from "react-icons/ci";
 import { FaUserFriends } from "react-icons/fa";
-import { getFriendRequests } from '../../apiCallls/friendRequestRoute';
+import { getFriendRequests, deleteFriendRequest } from '../../apiCallls/friendRequestRoute';
 import toast from 'react-hot-toast';
 
 function SendFriendRequest() {
@@ -27,6 +27,21 @@ function SendFriendRequest() {
     };
 
     console.log(allRequests);
+
+    const handleDeleteRequest = async (requestId) => {
+        try {
+            const response = await deleteFriendRequest(requestId);
+            if (response) {
+                toast.success(response.message);
+                setAllRequests(allRequests.filter((request) => request._id !== requestId));
+            }
+            else {
+                toast.error(response.message);
+            }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    };
 
   return (
     <div className='container mx-auto px-4 py-6'>
@@ -58,10 +73,20 @@ function SendFriendRequest() {
                 <p className='text-xs sm:text-sm font-medium border w-full sm:w-1/2 border-gray-300 rounded-3xl px-2 py-1 text-center truncate'>Learning: {request?.receiver?.learningLanguage}</p>
             </div>
             <p className='text-xs sm:text-sm text-gray-500 mt-1'>id: {request?._id}</p>
-            <button disabled className='w-full btn btn-primary border border-gray-300 rounded-3xl mt-3 text-sm sm:text-base py-2 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2 bg-blue-600 text-white'>
-                <FaUserFriends className='text-base sm:text-lg' />
-                <span>Send Friend Request</span>
-            </button>
+            <div className='flex flex-col sm:flex-row gap-2 w-full mt-3'>
+                <button 
+                    disabled 
+                    className='w-full sm:w-1/2 btn btn-primary border border-gray-300 rounded-3xl text-sm sm:text-base py-2 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2 bg-blue-600 text-white'
+                >
+                    <span>Sent</span>
+                </button>
+                <button 
+                    onClick={() => handleDeleteRequest(request?._id)} 
+                    className='w-full sm:w-1/2 btn btn-primary border border-gray-300 rounded-3xl text-sm sm:text-base py-2 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2 bg-blue-600 text-white'
+                >
+                    <span>Delete</span>
+                </button>
+            </div>
         </div>
         ))}
         </div>

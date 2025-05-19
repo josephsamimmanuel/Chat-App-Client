@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { onboardingRoute } from '../../apiCallls/onboardingRoute'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
@@ -12,7 +12,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  console.log(user.data);
+  const isOnboarding = user?.data?.isOnboarding;
   const [nativeLanguages] = useState(['English', 'Hindi', 'Marathi', 'Kannada', 'Telugu', 'Tamil', 'Urdu', 'Punjabi', 'Bengali', 'Odia', 'Gujarati', 'Assamese', 'Nepali', 'Sanskrit', 'Arabic', 'Persian', 'Turkish', 'Korean', 'Japanese', 'Chinese', 'Kurdish', 'Hebrew', 'Greek', 'Romanian', 'Bulgarian', 'Croatian', 'Czech', 'Danish', 'Dutch', 'Estonian', 'Finnish', 'French', 'German', 'Hungarian', 'Icelandic', 'Italian', 'Latvian', 'Lithuanian', 'Macedonian', 'Maltese', 'Norwegian', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Slovak', 'Slovenian', 'Spanish', 'Swedish', 'Thai', 'Turkish', 'Ukrainian', 'Vietnamese', 'Welsh', 'Yiddish', 'Zulu']);
   const [learningLanguages] = useState(['English', 'Hindi', 'Marathi', 'Kannada', 'Telugu', 'Tamil', 'Urdu', 'Punjabi', 'Bengali', 'Odia', 'Gujarati', 'Assamese', 'Nepali', 'Sanskrit', 'Arabic', 'Persian', 'Turkish', 'Korean', 'Japanese', 'Chinese', 'Kurdish', 'Hebrew', 'Greek', 'Romanian', 'Bulgarian', 'Croatian', 'Czech', 'Danish', 'Dutch', 'Estonian', 'Finnish', 'French', 'German', 'Hungarian', 'Icelandic', 'Italian', 'Latvian', 'Lithuanian', 'Macedonian', 'Maltese', 'Norwegian', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Slovak', 'Slovenian', 'Spanish', 'Swedish', 'Thai', 'Turkish', 'Ukrainian', 'Vietnamese', 'Welsh', 'Yiddish', 'Zulu']);
 
@@ -32,6 +32,17 @@ function Onboarding() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showMessage, setShowMessage] = useState(true);
+
+  useEffect(() => {
+    if (!isOnboarding) {
+      const timer = setTimeout(() => {
+        setShowMessage(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOnboarding]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,9 +132,12 @@ function Onboarding() {
     <div className='min-h-screen bg-gray-100'>
       <div className='container mx-auto px-4 py-8 md:py-12'>
         <div className='max-w-3xl mx-auto'>
-          <h1 className='text-2xl md:text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-8'>
-            {user ? 'Edit Profile' : 'Complete your profile'}
+          <h1 className='text-2xl md:text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-4'>
+            {isOnboarding ? 'Edit Profile' : 'Complete your profile'}
           </h1>
+          {!isOnboarding && showMessage && <p className='text-center text-gray-500 mb-8 font-semibold bg-green-500 border border-green-500 text-white rounded-lg py-1'>
+            Complete the profile registration. Only then you will be visible to other users
+          </p>}
 
           <form onSubmit={handleSubmit} className='bg-white rounded-xl shadow-lg p-4 md:p-6 lg:p-8 space-y-6'>
             {/* Profile Picture Section */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { CiLocationOn } from "react-icons/ci";
-import { getFriendRequests, acceptFriendRequest } from '../../apiCallls/friendRequestRoute';
+import { getFriendRequests, acceptFriendRequest, declineFriendRequest } from '../../apiCallls/friendRequestRoute';
 import toast from 'react-hot-toast';
 
 function RecievedFriendRequest() {
@@ -39,7 +39,23 @@ function RecievedFriendRequest() {
       toast.error(error.response.data.message);
     }
   };
+
+  const handleDeclineRequest = async (requestId) => {
+    try {
+      const response = await declineFriendRequest(requestId);
+      if (response) {
+        toast.success(response.message);
+        setAllRequests(allRequests.filter((request) => request._id !== requestId));
+      }
+      else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
   
+
 
   return (
     <div className='container mx-auto px-4 py-6'>
@@ -75,7 +91,7 @@ function RecievedFriendRequest() {
           <button onClick={() => handleAcceptRequest(request?._id)} className=' w-1/2 btn btn-primary border border-gray-300 rounded-3xl mt-3 text-sm sm:text-base py-2 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md'>
             Accept
           </button>
-          <button  className=' w-1/2 btn btn-primary border border-gray-300 rounded-3xl mt-3 text-sm sm:text-base py-2 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md'>
+          <button onClick={() => handleDeclineRequest(request?._id)} className=' w-1/2 btn btn-primary border border-gray-300 rounded-3xl mt-3 text-sm sm:text-base py-2 hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md'>
             Decline
           </button>
           </div>

@@ -14,3 +14,16 @@ export const acceptFriendRequest = async (requestId) => {
     const response = await axiosInstance.post(`/friend-request/accept/${requestId}`);
     return response.data;
 };
+
+export const declineFriendRequest = async (requestId) => {
+    const response = await axiosInstance.post(`/friend-request/decline/${requestId}`);
+    return response.data;
+};
+
+export const deleteFriendRequest = async (requestId) => {
+    const response = await axiosInstance.delete(`/friend-request/delete/${requestId}`);
+    return response.data;
+};
+
+
+

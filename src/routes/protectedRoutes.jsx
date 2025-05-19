@@ -16,6 +16,8 @@ function ProtectedRoutes() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const isOnboarding = location.pathname.split('/')[1] === 'onboarding'
+
   const { user } = useSelector((state) => state.user)
   const friendRequest = useSelector((state) => state.friendRequest)
   const token = sessionStorage.getItem('token')
@@ -63,6 +65,7 @@ function ProtectedRoutes() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <div className="bg-white shadow-md p-3 sm:p-4 border border-gray-200 flex justify-between items-center fixed top-0 left-0 right-0 z-10">
         <h1 className='text-xl sm:text-2xl font-bold truncate cursor-pointer' onClick={() => navigate('/')}>Hacker Chat</h1>
+        {isOnboarding && <p className='text-sm sm:text-base font-semibold text-gray-500'>Welcome, {user?.data?.username}</p>}
         <div className='flex items-center gap-2 sm:gap-12'>
           {/* Notification Icon */}
           <div className='flex items-center gap-2'>
