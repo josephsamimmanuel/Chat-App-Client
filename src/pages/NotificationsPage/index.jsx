@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getFriendRequests } from '../../apiCallls/friendRequestRoute';
 import { setFriendRequest } from '../../redux/friendRequest';
 import toast from 'react-hot-toast';
 import { CiLocationOn } from 'react-icons/ci';
 import moment from 'moment';
+import { setIsLoading } from '../../redux/loader';
+import { ComponentLoader } from '../../components/Loader';
+
 
 function NotificationsPage() {
   const [allRequests, setAllRequests] = useState([]);
   const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state?.loader?.isLoading);
   useEffect(() => {
       fetchAllRequests();
   }, []);
 
   const fetchAllRequests = async () => {
+    dispatch(setIsLoading(true));
     try {
         const response = await getFriendRequests();
         if (response) {
@@ -25,12 +30,15 @@ function NotificationsPage() {
               rejectedRequests: response.rejectedRequests,
             }));
             toast.success(response.message);
+            dispatch(setIsLoading(false));
         }
         else {
             toast.error(response.message);
+            dispatch(setIsLoading(false));
         }
     } catch (error) {
         toast.error(error.response.data.message);
+        dispatch(setIsLoading(false));
     }
 };
 
@@ -41,6 +49,7 @@ console.log(allRequests);
       {allRequests.length === 0 ? (
         <div className='flex flex-col gap-2 p-4 w-full h-full justify-center items-center'>
           <p className='text-sm sm:text-base font-medium'>No recieved friend requests</p>
+          {isLoading && <ComponentLoader />}
         </div>
       ) : (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
