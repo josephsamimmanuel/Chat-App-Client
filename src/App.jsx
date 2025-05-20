@@ -2,7 +2,7 @@ import React from "react";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import store from "./redux/reducer";
-import Loader from "./components/Loader";
+import {Loader} from "./components/Loader";
 import './stylesheets/loader.css';
 import CommonRoutes from "./routes/commonRoutes";
 function App() {

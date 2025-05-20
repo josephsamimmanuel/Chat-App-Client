@@ -2,56 +2,72 @@ import React, { useEffect, useState } from 'react'
 import { CiLocationOn } from "react-icons/ci";
 import { getFriendRequests, acceptFriendRequest, declineFriendRequest } from '../../apiCallls/friendRequestRoute';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsLoading } from '../../redux/loader';
+import { ComponentLoader } from '../../components/Loader';
 
 function RecievedFriendRequest() {
     const [allRequests, setAllRequests] = useState([]);
-
+    const dispatch = useDispatch();
+    const isLoading = useSelector((state) => state?.loader?.isLoading);
     useEffect(() => {
         fetchAllRequests();
     }, []);
 
     const fetchAllRequests = async () => {
-      try {
-          const response = await getFriendRequests();
-          if (response) {
-              setAllRequests(response.incomingRequests);
-              toast.success(response.message);
-          }
-          else {
-              toast.error(response.message);
-          }
-      } catch (error) {
-          toast.error(error.response.data.message);
-      }
-  };
+        dispatch(setIsLoading(true));
+        try {
+            const response = await getFriendRequests();
+            if (response) {
+                setAllRequests(response.incomingRequests);
+                toast.success(response.message);
+                dispatch(setIsLoading(false));
+            }
+            else {
+                toast.error(response.message);
+                dispatch(setIsLoading(false));
+            }
+        } catch (error) {
+            toast.error(error.response.data.message);
+            dispatch(setIsLoading(false));
+        }
+    };
 
   const handleAcceptRequest = async (requestId) => {
+    dispatch(setIsLoading(true));
     try {
       const response = await acceptFriendRequest(requestId);
       if (response) {
         toast.success(response.message);
         setAllRequests(allRequests.filter((request) => request._id !== requestId));
+        dispatch(setIsLoading(false));
       }
       else {
         toast.error(response.message);
+        dispatch(setIsLoading(false));
       }
     } catch (error) {
       toast.error(error.response.data.message);
+      dispatch(setIsLoading(false));
     }
   };
 
   const handleDeclineRequest = async (requestId) => {
+    dispatch(setIsLoading(true));
     try {
       const response = await declineFriendRequest(requestId);
       if (response) {
         toast.success(response.message);
         setAllRequests(allRequests.filter((request) => request._id !== requestId));
+        dispatch(setIsLoading(false));
       }
       else {
         toast.error(response.message);
+        dispatch(setIsLoading(false));
       }
     } catch (error) {
       toast.error(error.response.data.message);
+      dispatch(setIsLoading(false));
     }
   };
   
@@ -63,6 +79,7 @@ function RecievedFriendRequest() {
       {allRequests.length === 0 ? (
         <div className='flex flex-col gap-2 p-4 w-full h-full justify-center items-center'>
           <p className='text-sm sm:text-base font-medium'>No recieved friend requests</p>
+          {isLoading && <ComponentLoader />}
         </div>
       ) : (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>

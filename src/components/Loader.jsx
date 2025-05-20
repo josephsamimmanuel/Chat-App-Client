@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import '../stylesheets/loader.css';
 
-const Loader = () => {
+export const Loader = () => {
     const isLoading = useSelector((state) => state.loader.isLoading);
     if (!isLoading) return null;
 
@@ -12,4 +12,10 @@ const Loader = () => {
     );
 };
 
-export default Loader;
+export const ComponentLoader = () => {
+    return (
+        <div className="component-loader">
+            <div className="component-loader-spinner"></div>
+        </div>
+    );
+};

@@ -4,9 +4,15 @@ import { FaUserFriends } from "react-icons/fa";
 import { getUsers } from '../../apiCallls/getusers';
 import { sendFriendRequest } from '../../apiCallls/friendRequestRoute';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsLoading } from '../../redux/loader';
+import { ComponentLoader } from '../../components/Loader';
+
 
 function NewLearner() {
     const [users, setUsers] = useState([]);
+    const dispatch = useDispatch();
+    const isLoading = useSelector((state) => state?.loader?.isLoading);
 
     useEffect(() => {
         fetchUsers();
@@ -14,13 +20,16 @@ function NewLearner() {
 
     
     const fetchUsers = async () => {
+        dispatch(setIsLoading(true));
         try {
             const users = await getUsers();
             if (users) {
                 setUsers(users.users);
+                dispatch(setIsLoading(false));
             }
             else {
                 toast.error(users.message);
+                dispatch(setIsLoading(false));
             }
         } catch (error) {
             console.log(error);
@@ -28,17 +37,21 @@ function NewLearner() {
     };
 
     const handleSendFriendRequest = async (userId) => {
+        dispatch(setIsLoading(true));
         try {
             const response = await sendFriendRequest(userId);
             if (response) {
                 toast.success(response.message);
                 setUsers(users.filter((user) => user._id !== userId));
+                dispatch(setIsLoading(false));
             }
             else {
                 toast.error(response.message);
+                dispatch(setIsLoading(false));
             }
         } catch (error) {
             toast.error(error.response.data.message);
+            dispatch(setIsLoading(false));
         }
     };
     
@@ -47,6 +60,7 @@ function NewLearner() {
             {users.length === 0 ? (
                 <div className='flex flex-col gap-2 p-4 w-full h-full justify-center items-center'>
                     <p className='text-sm sm:text-base font-medium'>No new learners found</p>
+                    {isLoading && <ComponentLoader />}
                 </div>
             ) : (
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>

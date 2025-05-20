@@ -118,7 +118,11 @@ function Login() {
                         profilePicture: "",
                     });
                     console.log(response.data._id);
-                    navigate(`/onboarding/${response.data._id}`);
+                    if (response.data.isOnboarding === false) {
+                        navigate( `/onboarding/${response.data._id}`);
+                    } else {
+                        navigate("/");
+                    }
                 }
                 else {
                     toast.dismiss();
